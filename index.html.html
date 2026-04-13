@@ -17,11 +17,7 @@ header {
   padding:40px 20px;
   background:linear-gradient(90deg,#2563eb,#38bdf8);
 }
-.container {
-  max-width:1000px;
-  margin:30px auto;
-  padding:20px;
-}
+.container {max-width:1000px;margin:auto;padding:20px}
 .card {
   background:rgba(255,255,255,0.08);
   backdrop-filter:blur(10px);
@@ -29,159 +25,104 @@ header {
   border-radius:16px;
   margin-bottom:20px;
 }
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:15px;
-}
+.grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
 .member {
   background:rgba(255,255,255,0.1);
   padding:15px;
   border-radius:12px;
   text-align:center;
-  position:relative;
+  transition:0.3s;
 }
-.member img {
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:8px;
-  border:2px solid #38bdf8;
+.member:hover{
+  transform:scale(1.05);
 }
-.delete {
-  position:absolute;
-  top:5px;
-  right:8px;
-  cursor:pointer;
-  font-size:12px;
-  color:red;
-}
-.gallery img {
-  width:100%;
-  border-radius:12px;
-}
-input, textarea {
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border-radius:10px;
-  border:none;
-}
+.member img {width:80px;height:80px;border-radius:50%;object-fit:cover}
+input,button {width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none}
 button {
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
   background:#38bdf8;
   color:white;
   cursor:pointer;
+  transition:0.3s;
 }
-button:hover { background:#0ea5e9; }
-.footer {
-  text-align:center;
-  font-size:12px;
-  opacity:0.7;
-  margin-top:30px;
+button:hover{
+  background:#0ea5e9;
 }
 </style>
 </head>
 
 <body>
-
 <header>
-  <h1>Alumni SMP PGRI II Depok</h1>
-  <p>Angkatan 1993 • Tetap Solid & Bersaudara</p>
+<h1>Alumni SMP PGRI II Depok</h1>
+<p>Angkatan 1993</p>
 </header>
 
 <div class="container">
 
 <div class="card">
-  <h2>Tambah Data Alumni</h2>
-  <input type="text" id="nama" placeholder="Nama">
-  <input type="text" id="kota" placeholder="Kota">
-  <input type="file" id="foto">
-  <button onclick="tambahAlumni()">Simpan</button>
+<h2>Tambah Alumni</h2>
+<input id="nama" placeholder="Nama">
+<input id="kota" placeholder="Kota">
+<button onclick="tambahAlumni()">Simpan</button>
 </div>
 
 <div class="card">
-  <h2>Daftar Alumni</h2>
-  <div class="grid" id="listAlumni"></div>
+<h2>Daftar Alumni</h2>
+<div class="grid" id="listAlumni"></div>
 </div>
 
-<div class="card">
-  <h2>Galeri Reuni</h2>
-  <input type="file" id="fotoGaleri" multiple>
-  <button onclick="tambahGaleri()">Upload Foto</button>
-  <div class="grid gallery" id="galeri"></div>
 </div>
 
-<div class="footer">© 2026 Alumni SMP PGRI II Depok 1993</div>
-
-</div>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-function simpanData(){
-  localStorage.setItem('alumniData', document.getElementById('listAlumni').innerHTML);
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyCdtPgc8EnFsLxUOOyVIWE0ItY6VihCY3A",
+  authDomain: "alumni1993-pgri.firebaseapp.com",
+  databaseURL: "https://alumni1993-pgri-default-rtdb.firebaseio.com",
+  projectId: "alumni1993-pgri",
+  storageBucket: "alumni1993-pgri.firebasestorage.app",
+  messagingSenderId: "828759284051",
+  appId: "1:828759284051:web:bbd9cc7465e5bc61dc29a6",
+  measurementId: "G-70PWZ22YJ9"
+};
 
-function loadData(){
-  const data = localStorage.getItem('alumniData');
-  if(data){
-    document.getElementById('listAlumni').innerHTML = data;
-  }
-}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 function tambahAlumni(){
   const nama = document.getElementById('nama').value;
   const kota = document.getElementById('kota').value;
-  const file = document.getElementById('foto').files[0];
 
-  if(!nama) return alert('Isi nama dulu');
+  if(!nama) return alert('Isi nama');
 
-  const div = document.createElement('div');
-  div.className='member';
+  db.ref('alumni').push({nama,kota});
 
-  let isi = `<span class='delete' onclick='hapus(this)'>✖</span>`;
+  document.getElementById('nama').value='';
+  document.getElementById('kota').value='';
+}
 
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      div.innerHTML = isi + `<img src="${e.target.result}"><h4>${nama}</h4><p>${kota}</p>`;
-      document.getElementById('listAlumni').appendChild(div);
-      simpanData();
+function tampilkan(){
+  db.ref('alumni').on('value', (snapshot)=>{
+    const data = snapshot.val();
+    const list = document.getElementById('listAlumni');
+    list.innerHTML='';
+
+    if(data){
+      for(let id in data){
+        list.innerHTML += `
+        <div class="member">
+          <img src="https://via.placeholder.com/80">
+          <h4>${data[id].nama}</h4>
+          <p>${data[id].kota}</p>
+        </div>`;
+      }
     }
-    reader.readAsDataURL(file);
-  } else {
-    div.innerHTML = isi + `<img src="https://via.placeholder.com/80"><h4>${nama}</h4><p>${kota}</p>`;
-    document.getElementById('listAlumni').appendChild(div);
-    simpanData();
-  }
-
-  document.getElementById('nama').value = '';
-  document.getElementById('kota').value = '';
-  document.getElementById('foto').value = '';
+  });
 }
 
-function hapus(el){
-  el.parentElement.remove();
-  simpanData();
-}
-
-function tambahGaleri(){
-  const files = document.getElementById('fotoGaleri').files;
-  for(let i=0;i<files.length;i++){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      document.getElementById('galeri').appendChild(img);
-    }
-    reader.readAsDataURL(files[i]);
-  }
-}
-
-window.onload = loadData;
+tampilkan();
 </script>
 
 </body>
