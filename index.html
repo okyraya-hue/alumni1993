@@ -6,15 +6,66 @@
 <title>Alumni SMP PGRI II Depok 1993</title>
 
 <style>
-body {margin:0;font-family:'Segoe UI';background:#0f172a;color:white}
-header {text-align:center;padding:40px;background:#2563eb}
-.container {max-width:1000px;margin:auto;padding:20px}
-.card {background:rgba(255,255,255,0.08);padding:20px;border-radius:15px;margin-bottom:20px}
-.grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
-.member {background:rgba(255,255,255,0.1);padding:15px;border-radius:12px;text-align:center}
-.member img {width:80px;height:80px;border-radius:50%;object-fit:cover}
-input,button {width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none}
-button {background:#38bdf8;color:white;cursor:pointer}
+*{box-sizing:border-box}
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+}
+header {
+  text-align:center;
+  padding:40px 20px;
+  background:linear-gradient(90deg,#2563eb,#38bdf8);
+}
+.container {
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+.card {
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+.member {
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+.member img {
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+.gallery img{
+  width:100%;
+  border-radius:10px;
+}
+input,button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+}
+input{background:#f1f5f9;color:#000}
+button {
+  background:#38bdf8;
+  color:white;
+  cursor:pointer;
+}
+button:hover{background:#0ea5e9}
 </style>
 </head>
 
@@ -30,6 +81,7 @@ button {background:#38bdf8;color:white;cursor:pointer}
 <h2>Tambah Alumni</h2>
 <input id="nama" placeholder="Nama">
 <input id="kota" placeholder="Kota">
+<input type="file" id="foto">
 <button onclick="tambahAlumni()">Simpan</button>
 </div>
 
@@ -38,9 +90,15 @@ button {background:#38bdf8;color:white;cursor:pointer}
 <div class="grid" id="listAlumni"></div>
 </div>
 
+<div class="card">
+<h2>Galeri Reuni</h2>
+<input type="file" id="fotoGaleri" multiple>
+<button onclick="tambahGaleri()">Upload</button>
+<div class="grid gallery" id="galeri"></div>
 </div>
 
-<!-- FIREBASE -->
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -52,8 +110,7 @@ const firebaseConfig = {
   projectId: "alumni1993-pgri",
   storageBucket: "alumni1993-pgri.firebasestorage.app",
   messagingSenderId: "828759284051",
-  appId: "1:828759284051:web:bbd9cc7465e5bc61dc29a6",
-  measurementId: "G-70PWZ22YJ9"
+  appId: "1:828759284051:web:bbd9cc7465e5bc61dc29a6"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -62,13 +119,23 @@ const db = firebase.database();
 function tambahAlumni(){
   const nama = document.getElementById('nama').value;
   const kota = document.getElementById('kota').value;
+  const file = document.getElementById('foto').files[0];
 
   if(!nama) return alert('Isi nama');
 
-  db.ref('alumni').push({nama,kota});
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      db.ref('alumni').push({nama,kota,foto:e.target.result});
+    }
+    reader.readAsDataURL(file);
+  } else {
+    db.ref('alumni').push({nama,kota,foto:''});
+  }
 
   document.getElementById('nama').value='';
   document.getElementById('kota').value='';
+  document.getElementById('foto').value='';
 }
 
 function tampilkan(){
@@ -81,13 +148,26 @@ function tampilkan(){
       for(let id in data){
         list.innerHTML += `
         <div class="member">
-          <img src="https://via.placeholder.com/80">
+          <img src="${data[id].foto || 'https://via.placeholder.com/80'}">
           <h4>${data[id].nama}</h4>
           <p>${data[id].kota}</p>
         </div>`;
       }
     }
   });
+}
+
+function tambahGaleri(){
+  const files = document.getElementById('fotoGaleri').files;
+  for(let i=0;i<files.length;i++){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      document.getElementById('galeri').appendChild(img);
+    }
+    reader.readAsDataURL(files[i]);
+  }
 }
 
 tampilkan();
