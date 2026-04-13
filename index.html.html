@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni SMP PGRI II Depok 1993</title>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+}
+header {
+  text-align:center;
+  padding:40px 20px;
+  background:linear-gradient(90deg,#2563eb,#38bdf8);
+}
+.container {
+  max-width:1000px;
+  margin:30px auto;
+  padding:20px;
+}
+.card {
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+.member {
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  position:relative;
+}
+.member img {
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:8px;
+  border:2px solid #38bdf8;
+}
+.delete {
+  position:absolute;
+  top:5px;
+  right:8px;
+  cursor:pointer;
+  font-size:12px;
+  color:red;
+}
+.gallery img {
+  width:100%;
+  border-radius:12px;
+}
+input, textarea {
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:10px;
+  border:none;
+}
+button {
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#38bdf8;
+  color:white;
+  cursor:pointer;
+}
+button:hover { background:#0ea5e9; }
+.footer {
+  text-align:center;
+  font-size:12px;
+  opacity:0.7;
+  margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Alumni SMP PGRI II Depok</h1>
+  <p>Angkatan 1993 • Tetap Solid & Bersaudara</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+  <h2>Tambah Data Alumni</h2>
+  <input type="text" id="nama" placeholder="Nama">
+  <input type="text" id="kota" placeholder="Kota">
+  <input type="file" id="foto">
+  <button onclick="tambahAlumni()">Simpan</button>
+</div>
+
+<div class="card">
+  <h2>Daftar Alumni</h2>
+  <div class="grid" id="listAlumni"></div>
+</div>
+
+<div class="card">
+  <h2>Galeri Reuni</h2>
+  <input type="file" id="fotoGaleri" multiple>
+  <button onclick="tambahGaleri()">Upload Foto</button>
+  <div class="grid gallery" id="galeri"></div>
+</div>
+
+<div class="footer">© 2026 Alumni SMP PGRI II Depok 1993</div>
+
+</div>
+
+<script>
+function simpanData(){
+  localStorage.setItem('alumniData', document.getElementById('listAlumni').innerHTML);
+}
+
+function loadData(){
+  const data = localStorage.getItem('alumniData');
+  if(data){
+    document.getElementById('listAlumni').innerHTML = data;
+  }
+}
+
+function tambahAlumni(){
+  const nama = document.getElementById('nama').value;
+  const kota = document.getElementById('kota').value;
+  const file = document.getElementById('foto').files[0];
+
+  if(!nama) return alert('Isi nama dulu');
+
+  const div = document.createElement('div');
+  div.className='member';
+
+  let isi = `<span class='delete' onclick='hapus(this)'>✖</span>`;
+
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      div.innerHTML = isi + `<img src="${e.target.result}"><h4>${nama}</h4><p>${kota}</p>`;
+      document.getElementById('listAlumni').appendChild(div);
+      simpanData();
+    }
+    reader.readAsDataURL(file);
+  } else {
+    div.innerHTML = isi + `<img src="https://via.placeholder.com/80"><h4>${nama}</h4><p>${kota}</p>`;
+    document.getElementById('listAlumni').appendChild(div);
+    simpanData();
+  }
+
+  document.getElementById('nama').value = '';
+  document.getElementById('kota').value = '';
+  document.getElementById('foto').value = '';
+}
+
+function hapus(el){
+  el.parentElement.remove();
+  simpanData();
+}
+
+function tambahGaleri(){
+  const files = document.getElementById('fotoGaleri').files;
+  for(let i=0;i<files.length;i++){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      document.getElementById('galeri').appendChild(img);
+    }
+    reader.readAsDataURL(files[i]);
+  }
+}
+
+window.onload = loadData;
+</script>
+
+</body>
+</html>
