@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title id="title"></title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0f172a"/>
+
+<style>
+body {
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background: radial-gradient(circle at top, #1e3a8a, #020617);
+    color:white;
+}
+
+/* CONTAINER */
+.container {
+    max-width:360px;
+    margin:40px auto;
+    padding:15px;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding:22px;
+    border-radius:18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+/* HEADER */
+h2 {
+    margin-bottom:5px;
+    font-size:22px;
+}
+.subtitle {
+    font-size:13px;
+    opacity:0.8;
+    margin-bottom:15px;
+}
+
+/* MENU */
+.menu {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:15px;
+}
+.menu button {
+    padding:8px 18px;
+    border-radius:20px;
+    border:none;
+    background:rgba(255,255,255,0.15);
+    color:white;
+    cursor:pointer;
+}
+.menu button:hover {
+    background:#38bdf8;
+}
+
+/* FORM FIX */
+form {
+    width:100%;
+}
+
+/* INPUT (SUDAH FIX) */
+input {
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,0.15);
+    color:white;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+/* BUTTON (SUDAH FIX) */
+.btn {
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#38bdf8,#2563eb);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    box-sizing:border-box;
+}
+.btn:hover {
+    transform:scale(1.03);
+}
+
+/* INFO */
+#info {
+    font-size:13px;
+    margin:10px 0;
+    opacity:0.8;
+}
+
+/* TABLE */
+.table-box {
+    margin-top:20px;
+    font-size:13px;
+}
+table {
+    width:100%;
+    border-collapse:collapse;
+}
+th, td {
+    padding:8px;
+    text-align:center;
+}
+th {
+    background:rgba(255,255,255,0.2);
+}
+tr:nth-child(even) {
+    background:rgba(255,255,255,0.08);
+}
+
+/* FOOTER */
+.footer {
+    margin-top:15px;
+    font-size:12px;
+    opacity:0.8;
+}
+</style>
+</head>
+
+<body>
+
+$(if chap-id)
+<form name="sendin" action="$(link-login-only)" method="post">
+<input type="hidden" name="username"/>
+<input type="hidden" name="password"/>
+<input type="hidden" name="dst" value="$(link-orig)"/>
+<input type="hidden" name="popup" value="true"/>
+</form>
+
+<script src="md5.js"></script>
+<script>
+function doLogin(){
+document.sendin.username.value=document.login.username.value;
+document.sendin.password.value=hexMD5('$(chap-id)'+document.login.password.value+'$(chap-challenge)');
+document.sendin.submit();
+return false;
+}
+</script>
+$(endif)
+
+<div class="container">
+<div class="card">
+
+               <h2>‎彡ℙ𝕦𝕝𝕠ℕet Hotspot 64 彡</h2>
+<div class="subtitle">Solusi Internet Cepat • Stabil • Terjangkau</div>
+
+<div class="menu">
+<button onclick="voucher()">Voucher</button>
+<button onclick="member()">Member</button>
+</div>
+
+<div id="info">Masukkan kode voucher lalu klik Login</div>
+
+<form name="login" action="$(link-login-only)" method="post" $(if chap-id) onsubmit="return doLogin()" $(endif)>
+<input type="hidden" name="dst" value="$(link-orig)"/>
+<input type="hidden" name="popup" value="true"/>
+
+<input name="username" type="text" placeholder="Kode Voucher"/>
+<input name="password" type="hidden"/>
+
+<button class="btn" type="submit">Login</button>
+</form>
+
+$(if error)
+<div style="color:#f87171; margin-top:10px;">$(error)</div>
+$(endif)
+
+<div class="table-box">
+<b>🔥 Paket Internet</b>
+<table>
+<tr><th>Paket</th><th>Durasi</th><th>Harga</th><th>Device</th></tr>
+<tr><td>1H</td><td>24  Jam</td><td>Rp  3.000</td><td> 1 HP</td></tr>
+<tr><td>2H</td><td>2   Hari</td><td>Rp 5.000</td><td> 1 HP</td></tr>
+<tr><td>7H</td><td>7   Hari</td><td>Rp 15.000</td><td>1 HP</td></tr>
+<tr><td>30H</td><td>30 Hari</td><td>Rp 55.000</td><td>2 HP</td></tr>
+</table>
+</div>
+
+<div class="footer">
+✆WhatsApp: 0895-1323-7203<br>
+彡ℙ𝕦𝕝𝕠ℕet彡 — Internet Hemat & Stabil
+</div>
+
+</div>
+</div>
+
+<script>
+var username=document.login.username;
+var password=document.login.password;
+var info=document.getElementById("info");
+
+function setpass(){
+password.value=username.value;
+}
+
+username.onkeyup=setpass;
+
+function voucher(){
+username.placeholder="Kode Voucher";
+password.type="hidden";
+username.onkeyup=setpass;
+info.innerHTML="Masukkan kode voucher lalu klik Login";
+}
+
+function member(){
+username.placeholder="Username";
+password.type="password";
+username.onkeyup=null;
+info.innerHTML="Masukkan username & password";
+}
+</script>
+
+</body>
+</html>
