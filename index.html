@@ -20,23 +20,20 @@ body{
   color:white;
 }
 
-/* WRAPPER */
 .wrapper{
   max-width:1000px;
   margin:auto;
   padding:0 15px;
 }
 
-/* HEADER */
 header{
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-/* ISI HEADER */
 .header-inner{
-  padding:25px 0 20px; /* 👈 lebih rapat */
+  padding:25px 0 20px;
   text-align:center;
 }
 
@@ -45,22 +42,10 @@ header{
   margin-bottom:8px;
 }
 
-header h1{
-  font-size:22px;
-  margin-bottom:4px;
-}
-
-header p{
-  font-size:13px;
-  opacity:0.8;
-}
-
-/* CONTAINER */
 .container{
-  padding:10px 0 0; /* 👈 rapat ke header */
+  padding:10px 0;
 }
 
-/* CARD */
 .card{
   background:rgba(255,255,255,0.08);
   padding:18px;
@@ -68,14 +53,12 @@ header p{
   margin-bottom:18px;
 }
 
-/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
   gap:15px;
 }
 
-/* MEMBER */
 .member{
   background:rgba(255,255,255,0.1);
   padding:15px;
@@ -90,7 +73,6 @@ header p{
   margin-bottom:10px;
 }
 
-/* INPUT */
 input,button{
   width:100%;
   padding:10px;
@@ -148,8 +130,95 @@ button{
 </div>
 
 </div>
-
 </div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY_KAMU",
+  authDomain: "alumni1993-pgri.firebaseapp.com",
+  databaseURL: "https://alumni1993-pgri-default-rtdb.firebaseio.com",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* TAMBAH ALUMNI */
+function tambahAlumni(){
+  const nama = document.getElementById('nama').value;
+  const kota = document.getElementById('kota').value;
+  const file = document.getElementById('foto').files[0];
+
+  if(!nama) return alert('Isi nama');
+
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      db.ref('alumni').push({nama,kota,foto:e.target.result});
+    }
+    reader.readAsDataURL(file);
+  } else {
+    db.ref('alumni').push({nama,kota,foto:''});
+  }
+
+  document.getElementById('nama').value='';
+  document.getElementById('kota').value='';
+  document.getElementById('foto').value='';
+}
+
+/* TAMPILKAN ALUMNI */
+function tampilkan(){
+  db.ref('alumni').on('value', (snapshot)=>{
+    const data = snapshot.val();
+    const list = document.getElementById('listAlumni');
+    list.innerHTML='';
+
+    if(data){
+      for(let id in data){
+        list.innerHTML += `
+        <div class="member">
+          <img src="${data[id].foto || 'https://via.placeholder.com/80'}">
+          <h4>${data[id].nama}</h4>
+          <p>${data[id].kota}</p>
+        </div>`;
+      }
+    }
+  });
+}
+
+/* TAMBAH GURU */
+function tambahGuru(){
+  const namaGuru = document.getElementById('namaGuru').value;
+  if(!namaGuru) return alert('Isi nama guru');
+
+  db.ref('guru').push({nama:namaGuru});
+  document.getElementById('namaGuru').value='';
+}
+
+/* TAMPILKAN GURU */
+function tampilkanGuru(){
+  db.ref('guru').on('value', (snapshot)=>{
+    const data = snapshot.val();
+    const list = document.getElementById('listGuru');
+    list.innerHTML='';
+
+    if(data){
+      for(let id in data){
+        list.innerHTML += `
+        <div class="member">
+          <h4>${data[id].nama}</h4>
+        </div>`;
+      }
+    }
+  });
+}
+
+tampilkan();
+tampilkanGuru();
+</script>
 
 </body>
 </html>
