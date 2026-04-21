@@ -20,35 +20,34 @@ body{
   color:white;
 }
 
-/* WRAPPER UTAMA (INI KUNCI BIAR RATA) */
+/* WRAPPER */
 .wrapper{
   max-width:1000px;
   margin:auto;
-  padding:0 15px; /* samakan kiri kanan */
+  padding:0 15px;
 }
 
 /* HEADER */
 header{
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  margin-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
 /* ISI HEADER */
 .header-inner{
-  padding:30px 0; /* TIDAK ADA padding kiri kanan lagi */
+  padding:25px 0 20px; /* 👈 lebih rapat */
   text-align:center;
 }
 
 .logo{
   width:140px;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 
 header h1{
   font-size:22px;
-  margin-bottom:5px;
+  margin-bottom:4px;
 }
 
 header p{
@@ -58,7 +57,7 @@ header p{
 
 /* CONTAINER */
 .container{
-  padding:10px 0;
+  padding:10px 0 0; /* 👈 rapat ke header */
 }
 
 /* CARD */
@@ -67,7 +66,6 @@ header p{
   padding:18px;
   border-radius:14px;
   margin-bottom:18px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.2);
 }
 
 /* GRID */
@@ -83,11 +81,6 @@ header p{
   padding:15px;
   border-radius:12px;
   text-align:center;
-  transition:0.3s;
-}
-
-.member:hover{
-  transform:translateY(-4px);
 }
 
 .member img{
@@ -106,22 +99,15 @@ input,button{
   border:none;
 }
 
-/* INPUT */
 input{
   background:#f1f5f9;
   color:#000;
 }
 
-/* BUTTON */
 button{
   background:linear-gradient(90deg,#38bdf8,#6366f1);
   color:white;
   cursor:pointer;
-  transition:0.2s;
-}
-
-button:hover{
-  transform:scale(1.03);
 }
 </style>
 </head>
@@ -164,89 +150,6 @@ button:hover{
 </div>
 
 </div>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "alumni1993-pgri.firebaseapp.com",
-  databaseURL: "https://alumni1993-pgri-default-rtdb.firebaseio.com",
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-function tambahAlumni(){
-  const nama = document.getElementById('nama').value;
-  const kota = document.getElementById('kota').value;
-  const file = document.getElementById('foto').files[0];
-
-  if(!nama) return alert('Isi nama');
-
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      db.ref('alumni').push({nama,kota,foto:e.target.result});
-    }
-    reader.readAsDataURL(file);
-  } else {
-    db.ref('alumni').push({nama,kota,foto:''});
-  }
-
-  document.getElementById('nama').value='';
-  document.getElementById('kota').value='';
-  document.getElementById('foto').value='';
-}
-
-function tampilkan(){
-  db.ref('alumni').on('value', (snapshot)=>{
-    const data = snapshot.val();
-    const list = document.getElementById('listAlumni');
-    list.innerHTML='';
-
-    if(data){
-      for(let id in data){
-        list.innerHTML += `
-        <div class="member">
-          <img src="${data[id].foto || 'https://via.placeholder.com/80'}">
-          <h4>${data[id].nama}</h4>
-          <p>${data[id].kota}</p>
-        </div>`;
-      }
-    }
-  });
-}
-
-function tambahGuru(){
-  const namaGuru = document.getElementById('namaGuru').value;
-  if(!namaGuru) return alert('Isi nama guru');
-
-  db.ref('guru').push({nama:namaGuru});
-  document.getElementById('namaGuru').value='';
-}
-
-function tampilkanGuru(){
-  db.ref('guru').on('value', (snapshot)=>{
-    const data = snapshot.val();
-    const list = document.getElementById('listGuru');
-    list.innerHTML='';
-
-    if(data){
-      for(let id in data){
-        list.innerHTML += `
-        <div class="member">
-          <h4>${data[id].nama}</h4>
-        </div>`;
-      }
-    }
-  });
-}
-
-tampilkan();
-tampilkanGuru();
-</script>
 
 </body>
 </html>
