@@ -30,69 +30,41 @@ header{
 .logo{
   width:200px;
   margin-bottom:10px;
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
 }
 
-header h1{
-  font-size:22px;
-}
-
-header p{
-  opacity:0.8;
-}
-
-/* CONTAINER */
 .container{
   max-width:1000px;
   margin:auto;
   padding:20px;
 }
 
-/* CARD */
 .card{
   background:rgba(255,255,255,0.08);
-  backdrop-filter:blur(10px);
   padding:20px;
   border-radius:16px;
   margin-bottom:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
   gap:15px;
 }
 
-/* MEMBER CARD */
 .member{
   background:rgba(255,255,255,0.1);
   padding:15px;
   border-radius:12px;
   text-align:center;
-  transition:0.3s;
-}
-
-.member:hover{
-  transform:translateY(-5px);
 }
 
 .member img{
   width:70px;
   height:70px;
   border-radius:50%;
-  object-fit:cover;
   margin-bottom:10px;
 }
 
-/* GALERI */
-.gallery img{
-  width:100%;
-  border-radius:10px;
-}
-
-/* INPUT */
 input,button{
   width:100%;
   padding:10px;
@@ -106,17 +78,10 @@ input{
   color:#000;
 }
 
-/* BUTTON */
 button{
   background:linear-gradient(90deg,#38bdf8,#6366f1);
   color:white;
   cursor:pointer;
-  transition:0.3s;
-}
-
-button:hover{
-  transform:scale(1.03);
-  opacity:0.9;
 }
 </style>
 </head>
@@ -126,12 +91,12 @@ button:hover{
 <header>
   <img src="logo.png" class="logo">
   <h1>Alumni SMP PGRI II Depok</h1>
-  <p>Jalan.Letnan Hatta Sukirman Depok </p>
   <p>Angkatan 1993</p>
 </header>
 
 <div class="container">
 
+<!-- TAMBAH ALUMNI -->
 <div class="card">
 <h2>Tambah Alumni</h2>
 <input id="nama" placeholder="Nama">
@@ -140,16 +105,18 @@ button:hover{
 <button onclick="tambahAlumni()">Simpan</button>
 </div>
 
+<!-- DAFTAR ALUMNI -->
 <div class="card">
 <h2>Daftar Alumni</h2>
 <div class="grid" id="listAlumni"></div>
 </div>
 
+<!-- DATA GURU -->
 <div class="card">
-<h2>Galeri Reuni</h2>
-<input type="file" id="fotoGaleri" multiple>
-<button onclick="tambahGaleri()">Upload</button>
-<div class="grid gallery" id="galeri"></div>
+<h2>Data Guru</h2>
+<input id="namaGuru" placeholder="Nama Guru">
+<button onclick="tambahGuru()">Simpan</button>
+<div class="grid" id="listGuru"></div>
 </div>
 
 </div>
@@ -167,6 +134,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+/* ALUMNI */
 function tambahAlumni(){
   const nama = document.getElementById('nama').value;
   const kota = document.getElementById('kota').value;
@@ -184,11 +152,11 @@ function tambahAlumni(){
     db.ref('alumni').push({nama,kota,foto:''});
   }
 
-  document.getElementById('nama').value='';
-  document.getElementById('kota').value='';
-  document.getElementById('foto').value='';
+  nama.value='';
+  kota.value='';
 }
 
+/* TAMPILKAN ALUMNI */
 function tampilkan(){
   db.ref('alumni').on('value', (snapshot)=>{
     const data = snapshot.val();
@@ -208,20 +176,35 @@ function tampilkan(){
   });
 }
 
-function tambahGaleri(){
-  const files = document.getElementById('fotoGaleri').files;
-  for(let i=0;i<files.length;i++){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      document.getElementById('galeri').appendChild(img);
+/* GURU */
+function tambahGuru(){
+  const namaGuru = document.getElementById('namaGuru').value;
+  if(!namaGuru) return alert('Isi nama guru');
+
+  db.ref('guru').push({nama:namaGuru});
+  document.getElementById('namaGuru').value='';
+}
+
+/* TAMPILKAN GURU */
+function tampilkanGuru(){
+  db.ref('guru').on('value', (snapshot)=>{
+    const data = snapshot.val();
+    const list = document.getElementById('listGuru');
+    list.innerHTML='';
+
+    if(data){
+      for(let id in data){
+        list.innerHTML += `
+        <div class="member">
+          <h4>${data[id].nama}</h4>
+        </div>`;
+      }
     }
-    reader.readAsDataURL(files[i]);
-  }
+  });
 }
 
 tampilkan();
+tampilkanGuru();
 </script>
 
 </body>
