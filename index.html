@@ -1,7 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni SMP PGRI II Depok 1993</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:40px 20px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.logo{
+  width:80px;
+  margin-bottom:10px;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+
+header h1{
+  font-size:22px;
+}
+
+header p{
+  opacity:0.8;
+}
+
+/* CONTAINER */
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:15px;
+}
+
+/* MEMBER CARD */
+.member{
+  background:rgba(255,255,255,0.1);
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  transition:0.3s;
+}
+
+.member:hover{
+  transform:translateY(-5px);
+}
+
+.member img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+
+/* GALERI */
+.gallery img{
+  width:100%;
+  border-radius:10px;
+}
+
+/* INPUT */
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+}
+
+input{
+  background:#f1f5f9;
+  color:#000;
+}
+
+/* BUTTON */
+button{
+  background:linear-gradient(90deg,#38bdf8,#6366f1);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.03);
+  opacity:0.9;
+}
+</style>
+</head>
+
 <body>
 
 <header>
-  <img src="logo.png" style="width:90px; margin-bottom:10px;">
+  <img src="logo.png" class="logo">
   <h1>Alumni SMP PGRI II Depok</h1>
   <p>Angkatan 1993</p>
 </header>
@@ -30,4 +153,75 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "alumni1993-pgri.firebaseapp.com",
+  databaseURL: "https://alumni1993-pgri-default-rtdb.firebaseio.com",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function tambahAlumni(){
+  const nama = document.getElementById('nama').value;
+  const kota = document.getElementById('kota').value;
+  const file = document.getElementById('foto').files[0];
+
+  if(!nama) return alert('Isi nama');
+
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      db.ref('alumni').push({nama,kota,foto:e.target.result});
+    }
+    reader.readAsDataURL(file);
+  } else {
+    db.ref('alumni').push({nama,kota,foto:''});
+  }
+
+  document.getElementById('nama').value='';
+  document.getElementById('kota').value='';
+  document.getElementById('foto').value='';
+}
+
+function tampilkan(){
+  db.ref('alumni').on('value', (snapshot)=>{
+    const data = snapshot.val();
+    const list = document.getElementById('listAlumni');
+    list.innerHTML='';
+
+    if(data){
+      for(let id in data){
+        list.innerHTML += `
+        <div class="member">
+          <img src="${data[id].foto || 'https://via.placeholder.com/80'}">
+          <h4>${data[id].nama}</h4>
+          <p>${data[id].kota}</p>
+        </div>`;
+      }
+    }
+  });
+}
+
+function tambahGaleri(){
+  const files = document.getElementById('fotoGaleri').files;
+  for(let i=0;i<files.length;i++){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      document.getElementById('galeri').appendChild(img);
+    }
+    reader.readAsDataURL(files[i]);
+  }
+}
+
+tampilkan();
+</script>
+
 </body>
+</html>
