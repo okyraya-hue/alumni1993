@@ -20,10 +20,11 @@ body{
   color:white;
 }
 
-/* WRAPPER BIAR SEJAJAR */
+/* WRAPPER UTAMA (INI KUNCI BIAR RATA) */
 .wrapper{
   max-width:1000px;
   margin:auto;
+  padding:0 15px; /* samakan kiri kanan */
 }
 
 /* HEADER */
@@ -31,15 +32,17 @@ header{
   background:rgba(255,255,255,0.05);
   backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(255,255,255,0.1);
+  margin-bottom:10px;
 }
 
+/* ISI HEADER */
 .header-inner{
-  padding:30px 20px;
+  padding:30px 0; /* TIDAK ADA padding kiri kanan lagi */
   text-align:center;
 }
 
 .logo{
-  width:150px;
+  width:140px;
   margin-bottom:10px;
 }
 
@@ -49,21 +52,21 @@ header h1{
 }
 
 header p{
-  opacity:0.8;
   font-size:13px;
+  opacity:0.8;
 }
 
 /* CONTAINER */
 .container{
-  padding:20px;
+  padding:10px 0;
 }
 
 /* CARD */
 .card{
   background:rgba(255,255,255,0.08);
-  padding:20px;
+  padding:18px;
   border-radius:14px;
-  margin-bottom:20px;
+  margin-bottom:18px;
   box-shadow:0 5px 20px rgba(0,0,0,0.2);
 }
 
@@ -84,7 +87,7 @@ header p{
 }
 
 .member:hover{
-  transform:translateY(-5px);
+  transform:translateY(-4px);
 }
 
 .member img{
@@ -103,6 +106,7 @@ input,button{
   border:none;
 }
 
+/* INPUT */
 input{
   background:#f1f5f9;
   color:#000;
@@ -137,7 +141,6 @@ button:hover{
 
 <div class="container">
 
-<!-- TAMBAH ALUMNI -->
 <div class="card">
 <h2>Tambah Alumni</h2>
 <input id="nama" placeholder="Nama">
@@ -146,13 +149,11 @@ button:hover{
 <button onclick="tambahAlumni()">Simpan</button>
 </div>
 
-<!-- DAFTAR ALUMNI -->
 <div class="card">
 <h2>Daftar Alumni</h2>
 <div class="grid" id="listAlumni"></div>
 </div>
 
-<!-- DATA GURU -->
 <div class="card">
 <h2>Data Guru</h2>
 <input id="namaGuru" placeholder="Nama Guru">
@@ -177,7 +178,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* TAMBAH ALUMNI */
 function tambahAlumni(){
   const nama = document.getElementById('nama').value;
   const kota = document.getElementById('kota').value;
@@ -200,7 +200,6 @@ function tambahAlumni(){
   document.getElementById('foto').value='';
 }
 
-/* TAMPILKAN ALUMNI */
 function tampilkan(){
   db.ref('alumni').on('value', (snapshot)=>{
     const data = snapshot.val();
@@ -220,7 +219,6 @@ function tampilkan(){
   });
 }
 
-/* TAMBAH GURU */
 function tambahGuru(){
   const namaGuru = document.getElementById('namaGuru').value;
   if(!namaGuru) return alert('Isi nama guru');
@@ -229,7 +227,6 @@ function tambahGuru(){
   document.getElementById('namaGuru').value='';
 }
 
-/* TAMPILKAN GURU */
 function tampilkanGuru(){
   db.ref('guru').on('value', (snapshot)=>{
     const data = snapshot.val();
